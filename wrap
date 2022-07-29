@@ -2,11 +2,7 @@
 
 from werkzeug import Request, run_simple
 
-from ponodo.core.application import Application
-
-# class FooController(Controller):
-#     def index(self, request: HttpRequest, number):
-#         return "Hello world from foo controller"
+from ponodo.core import Application
 
 
 def handle_application(environ, start_response):
