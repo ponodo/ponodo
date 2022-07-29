@@ -1,18 +1,27 @@
 #!/usr/bin/env python
-from werkzeug import run_simple
 
-print("hahah")
+from werkzeug import Request, run_simple
+
+from ponodo.core.application import Application
+
+# class FooController(Controller):
+#     def index(self, request: HttpRequest, number):
+#         return "Hello world from foo controller"
 
 
-def app():
-    print("app")
+def handle_application(environ, start_response):
+    application = Application()
+    application.set_werkzeug_request(Request(environ))
+    application.set_werkzeug_response(start_response)
+    return application.handle()
 
 
-run_simple(
-    "localhost",
-    4000,
-    application=app,
-    use_reloader=True,
-    use_debugger=True,
-    reloader_type="watchdog",
-)
+if __name__ == "__main__":
+    run_simple(
+        "localhost",
+        4000,
+        application=handle_application,
+        use_reloader=True,
+        use_debugger=True,
+        reloader_type="watchdog",
+    )
