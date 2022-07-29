@@ -10,13 +10,14 @@ class Response:
         self.werkzeug_start_response = werkzeug_start_response
 
     def __call__(self, *args, **kwargs):
-        content, content_type = self.format_content(args[0])
-        response = WerkzeugResponse(content, content_type=content_type)
+        content, content_type = self._get_content_metadata(args[0])
+        response = WerkzeugResponse(content, content_type=content_type, **kwargs)
         return response(
             self.app.instances["request"].environ, self.werkzeug_start_response
         )
 
-    def format_content(self, content):
+    @staticmethod
+    def _get_content_metadata(content):
         if isinstance(content, str):
             return content, "text/plain; charset=utf-8"
         if isinstance(content, (dict, collections.abc.Sequence)):
