@@ -1,8 +1,9 @@
-from ponodo.core.facade import Facade
-from ponodo.http.request import Request
-from ponodo.http.response import Response
-from ponodo.routing.controller_dispatcher import ControllerDispatcher
-from ponodo.routing.route_collection import RouteCollection
+from ponodo.http import Request, Response
+from ponodo.routing import ControllerDispatcher, RouteCollection
+
+
+class Facade:
+    app = None
 
 
 class Container:

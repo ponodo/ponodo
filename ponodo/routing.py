@@ -1,6 +1,7 @@
 import inspect
 
-from ponodo.http.request import Request
+from ponodo.core import Facade
+from ponodo.http import Request
 
 
 class ControllerDispatcher:
@@ -45,3 +46,44 @@ class ControllerDispatcher:
             # return [controller_result.encode("utf-8")]
 
         return response("404", status=404)
+
+
+class Route:
+    def __init__(
+        self, path, method="GET", to=None, controller=None, action=None, alias=None
+    ):
+        self.path = path
+        self.to = to
+        self.controller = controller
+        self.action = action
+        self.alias = alias
+        self.method = method
+
+    @classmethod
+    def get(cls, path, **kwargs):
+        app = Facade.app
+        routes = app.get("routes")
+        routes.add_route(cls(path, method="GET", **kwargs))
+        routes.add_route(cls(path, method="HEAD", **kwargs))
+
+    @classmethod
+    def post(cls, path, **kwargs):
+        app = Facade.app
+        routes = app.get("routes")
+        routes.add_route(cls(path, method="POST", **kwargs))
+
+
+class RouteCollection:
+    def __init__(self, app):
+        self.app = app
+        self.routes = {
+            "GET": {},
+            "HEAD": {},
+            "POST": {},
+            "PUT": {},
+            "PATCH": {},
+            "DELETE": {},
+        }
+
+    def add_route(self, route: Route):
+        self.routes[route.method][route.path] = route
