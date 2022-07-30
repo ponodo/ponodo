@@ -39,7 +39,7 @@ class Response:
     def _get_content_metadata(content):
         if isinstance(content, str):
             return content, "text/plain; charset=utf-8"
-        if isinstance(content, (dict, collections.abc.Sequence)):
+        elif isinstance(content, (dict, collections.abc.Sequence)):
             return json.dumps(content), "application/json; charset=utf-8"
 
         return content, "text/plain; charset=utf-8"

@@ -1,5 +1,7 @@
+from werkzeug import Request as WerkzeugRequest
+
 from ponodo.http import Request, Response
-from ponodo.routing import ControllerDispatcher, RouteCollection
+from ponodo.routing import ControllerDispatcher
 
 
 class Facade:
@@ -16,7 +18,7 @@ class Container:
         # Instance of class or plain object
         self.instances = {}
 
-    def get(self, abstract):
+    def make(self, abstract):
         if abstract in self.instances:
             return self.instances[abstract]
 
@@ -37,10 +39,14 @@ class Application(Container):
 
     def handle(self):
         # Set application as class property of Facade class
-        self.instances["routes"] = RouteCollection(app=self)
-        Facade.app = self
-        from app.routes.web import routes
-
-        routes()
+        # self.instances["routes"] = RouteCollection(app=self)
+        # Facade.app = self
 
         return ControllerDispatcher(app=self).run()
+
+
+def handle_application(environ, start_response):
+    application = Application()
+    application.set_werkzeug_request(WerkzeugRequest(environ))
+    application.set_werkzeug_response(start_response)
+    return application.handle()

@@ -1,21 +1,13 @@
 #!/usr/bin/env python
 
-from werkzeug import Request, run_simple
+from werkzeug import run_simple
 
-from ponodo.core import Application
-
-
-def handle_application(environ, start_response):
-    application = Application()
-    application.set_werkzeug_request(Request(environ))
-    application.set_werkzeug_response(start_response)
-    return application.handle()
-
+from ponodo.core import handle_application
 
 if __name__ == "__main__":
     run_simple(
         "localhost",
-        4000,
+        4000,  # todo: configurable port
         application=handle_application,
         use_reloader=True,
         use_debugger=True,
