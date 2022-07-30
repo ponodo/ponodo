@@ -1,5 +1,6 @@
 import inspect
 
+from werkzeug.exceptions import HTTPException
 from werkzeug.routing import Map
 
 from ponodo.helpers import import_class
@@ -16,7 +17,21 @@ class ControllerDispatcher:
         # todo: configurable routing registration
         from app.routes.web import routes
 
-        endpoint, args = Map(routes).bind_to_environ(request.environ).match()
+        routes_map = Map()
+        for route in routes:
+            if route.map is not None:
+                route.map = None
+            routes_map.add(route)
+
+        adapter = routes_map.bind_to_environ(request.environ)
+
+        try:
+            endpoint, args = adapter.match()
+        except HTTPException as e:
+            return e(
+                request.environ, self.app.instances["response"].werkzeug_start_response
+            )
+
         controller, action = endpoint.split("@")
         controller = import_class(controller)
         executor = getattr(controller(app=self), action)
